@@ -1,7 +1,7 @@
 import dash                     # pip install dash
 from dash.dependencies import Input, Output, State
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 import plotly.express as px     # pip install plotly==5.2.2
 
 import pandas as pd             # pip install pandas
@@ -43,19 +43,19 @@ def make_graphs(Item_chosen):
 
     # SUNBURST
     df_sburst = df.dropna(subset=['Territory'])
-    df_sburst = df_sburst[df_sburst["Item quantity"].isin(["Apple", "Lime", "PG"])]
-    fig_sunburst = px.sunburst(df_sburst, path=["Outlet", "Item quantity", "Territory"])
+    df_sburst = df_sburst[df_sburst["Item name"].isin(["Apple", "PG", "Lime"])]
+    fig_sunburst = px.sunburst(df_sburst, path=["Item quantity", "Area"], color="Time")
 
     # Empirical Cumulative Distribution
-    df_ecdf = df[df["Outlet"].isin(["Apple","Lime", "PG"])]
+    df_ecdf = df[df["Item name"].isin(["Apple", "PG", "Lime"])]
     fig_ecdf = px.ecdf(df_ecdf, x="Date", color="Time")
 
     # LINE CHART
     df_line = df.sort_values(by=["Time"], ascending=True)
     df_line = df_line.groupby(
-        ["Territory", "item name"]).size().reset_index(name="count")
-    fig_line = px.line(df_line, x="Time", y="count",
-                       color="item name", markers=True)
+        ["Territory", "Item name"]).size().reset_index(name="count")
+    fig_line = px.line(df_line, x="Item name", y="count",
+                       color="Item name", markers=True)
 
     return [
         html.Div([
